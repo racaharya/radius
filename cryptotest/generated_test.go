@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"layeh.com/radius"
+	"github.com/holgermetschulat/radius"
 )
 
 type TestServer struct {

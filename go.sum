@@ -1,3 +1,5 @@
+github.com/holgermetschulat/radius v0.0.0-20200814092654-f71bde831616 h1:kcbv+2p+TRHnt1grJdqePkLeL+dad7jNbUq9Mqjqi4Q=
+github.com/holgermetschulat/radius v0.0.0-20200814092654-f71bde831616/go.mod h1:5IXiNMLBP9yR3uSsO4ETHDzTKLU+yx90LDvOCwKJXxk=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 h1:DZhuSZLsGlFL4CmhA8BcRA0mnthyA/nZ00AqCUo7vHg=
 golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=

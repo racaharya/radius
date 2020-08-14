@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"layeh.com/radius"
+	"github.com/holgermetschulat/radius"
 )
 
 const (

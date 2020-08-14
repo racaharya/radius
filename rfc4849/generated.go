@@ -3,7 +3,7 @@
 package rfc4849
 
 import (
-	"layeh.com/radius"
+	"github.com/holgermetschulat/radius"
 )
 
 const (

@@ -5,8 +5,8 @@ package rfc4679
 import (
 	"strconv"
 
-	"layeh.com/radius"
-	"layeh.com/radius/rfc2865"
+	"github.com/holgermetschulat/radius"
+	"github.com/holgermetschulat/radius/rfc2865"
 )
 
 const (

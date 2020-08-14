@@ -6,13 +6,13 @@ import (
 	"bytes"
 	"log"
 
-	"layeh.com/radius"
-	"layeh.com/radius/rfc2759"
-	"layeh.com/radius/rfc2865"
-	"layeh.com/radius/rfc2868"
-	"layeh.com/radius/rfc2869"
-	"layeh.com/radius/rfc3079"
-	"layeh.com/radius/vendors/microsoft"
+	"github.com/holgermetschulat/radius"
+	"github.com/holgermetschulat/radius/rfc2759"
+	"github.com/holgermetschulat/radius/rfc2865"
+	"github.com/holgermetschulat/radius/rfc2868"
+	"github.com/holgermetschulat/radius/rfc2869"
+	"github.com/holgermetschulat/radius/rfc3079"
+	"github.com/holgermetschulat/radius/vendors/microsoft"
 )
 
 const (

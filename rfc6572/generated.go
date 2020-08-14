@@ -5,7 +5,7 @@ package rfc6572
 import (
 	"net"
 
-	"layeh.com/radius"
+	"github.com/holgermetschulat/radius"
 )
 
 const (
