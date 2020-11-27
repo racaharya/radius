@@ -1234,7 +1234,7 @@ func MSCHAPMPPEKeys_Add(p *radius.Packet, value []byte) (err error) {
 		return
 	}
 	var a radius.Attribute
-	a, err = radius.NewUserPassword(value, p.Secret, p.CryptoAuthenticator[:])
+	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
 	}
@@ -1247,7 +1247,7 @@ func MSCHAPMPPEKeys_AddString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	var a radius.Attribute
-	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.CryptoAuthenticator[:])
+	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
 	}
@@ -1267,7 +1267,7 @@ func MSCHAPMPPEKeys_GetString(p *radius.Packet) (value string) {
 func MSCHAPMPPEKeys_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range _Microsoft_GetsVendor(p, 12) {
-		i, err = radius.UserPassword(attr, p.Secret, p.CryptoAuthenticator[:])
+		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
 		if err == nil && len(i) != 24 {
 			err = errors.New("invalid value length")
 		}
@@ -1283,7 +1283,7 @@ func MSCHAPMPPEKeys_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range _Microsoft_GetsVendor(p, 12) {
 		var up []byte
-		up, err = radius.UserPassword(attr, p.Secret, p.CryptoAuthenticator[:])
+		up, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
 		if err == nil {
 			i = string(up)
 		}
@@ -1304,7 +1304,7 @@ func MSCHAPMPPEKeys_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-	value, err = radius.UserPassword(a, p.Secret, p.CryptoAuthenticator[:])
+	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
 	if err == nil && len(value) != 24 {
 		err = errors.New("invalid value length")
 	}
@@ -1318,7 +1318,7 @@ func MSCHAPMPPEKeys_LookupString(p *radius.Packet) (value string, err error) {
 		return
 	}
 	var b []byte
-	b, err = radius.UserPassword(a, p.Secret, p.CryptoAuthenticator[:])
+	b, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
 	if err == nil {
 		value = string(b)
 	}
@@ -1334,7 +1334,7 @@ func MSCHAPMPPEKeys_Set(p *radius.Packet, value []byte) (err error) {
 		return
 	}
 	var a radius.Attribute
-	a, err = radius.NewUserPassword(value, p.Secret, p.CryptoAuthenticator[:])
+	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
 	}
@@ -1347,7 +1347,7 @@ func MSCHAPMPPEKeys_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	var a radius.Attribute
-	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.CryptoAuthenticator[:])
+	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
 	}
