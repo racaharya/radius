@@ -79,35 +79,7 @@ func _Microsoft_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute,
 }
 
 func _Microsoft_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
-	for i := 0; i < len(p.Attributes); {
-		avp := p.Attributes[i]
-		if avp.Type != rfc2865.VendorSpecific_Type {
-			i++
-			continue
-		}
-		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
-		if err != nil || vendorID != _Microsoft_VendorID {
-			i++
-			continue
-		}
-		for j := 0; len(vsa[j:]) >= 3; {
-			vsaTyp, vsaLen := vsa[0], vsa[1]
-			if int(vsaLen) > len(vsa[j:]) || vsaLen < 3 {
-				i++
-				break
-			}
-			if vsaTyp == typ {
-				vsa = append(vsa[:j], vsa[j+int(vsaLen):]...)
-			}
-			j += int(vsaLen)
-		}
-		if len(vsa) > 0 {
-			copy(avp.Attribute[4:], vsa)
-			i++
-		} else {
-			p.Attributes = append(p.Attributes[:i], p.Attributes[i+i:]...)
-		}
-	}
+	_Microsoft_DelVendor(p, typ)
 	return _Microsoft_AddVendor(p, typ, attr)
 }
 
