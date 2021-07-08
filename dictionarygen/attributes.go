@@ -1058,7 +1058,7 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	if attr.HasTag() {
 		p(w, `	if len(a) >= 1 && a[0] <= 0x1F {`)
 		p(w, `		tag = a[0]`)
-		p(w, `		a[0] = 0x00`)
+//		p(w, `		a[0] = 0x00`)
 		p(w, `	}`)
 	}
 
@@ -1067,12 +1067,21 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	if bitsize == 64 {
 		p(w, `	var i uint64`)
 		p(w, `	i, err = radius.Integer64(a)`)
+	if attr.HasTag() {
+		p(w, `	i = i & 0xffffffffffffff // remove tag in the upper 8 bits`)
+		}
 	} else if bitsize == 16 {
 		p(w, `	var i uint16`)
 		p(w, `	i, err = radius.Short(a)`)
+	if attr.HasTag() {
+		p(w, `	i = i & 0xff // remove tag in the upper 8 bits`)
+		}
 	} else { // 32
 		p(w, `	var i uint32`)
 		p(w, `	i, err = radius.Integer(a)`)
+	if attr.HasTag() {
+		p(w, `	i = i & 0xffffff // remove tag in the upper 8 bits`)
+		}
 	}
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
