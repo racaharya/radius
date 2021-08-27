@@ -107,10 +107,10 @@ func TunnelType_Lookup(p *radius.Packet) (tag byte, value TunnelType, err error)
 	}
 	if len(a) >= 1 && a[0] <= 0x1F {
 		tag = a[0]
-		a[0] = 0x00
 	}
 	var i uint32
 	i, err = radius.Integer(a)
+	i = i & 0xffffff // remove tag in the upper 8 bits
 	if err != nil {
 		return
 	}
@@ -224,10 +224,10 @@ func TunnelMediumType_Lookup(p *radius.Packet) (tag byte, value TunnelMediumType
 	}
 	if len(a) >= 1 && a[0] <= 0x1F {
 		tag = a[0]
-		a[0] = 0x00
 	}
 	var i uint32
 	i, err = radius.Integer(a)
+	i = i & 0xffffff // remove tag in the upper 8 bits
 	if err != nil {
 		return
 	}
@@ -1029,10 +1029,10 @@ func TunnelPreference_Lookup(p *radius.Packet) (tag byte, value TunnelPreference
 	}
 	if len(a) >= 1 && a[0] <= 0x1F {
 		tag = a[0]
-		a[0] = 0x00
 	}
 	var i uint32
 	i, err = radius.Integer(a)
+	i = i & 0xffffff // remove tag in the upper 8 bits
 	if err != nil {
 		return
 	}
