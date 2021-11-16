@@ -3,7 +3,7 @@
 package rfc5447
 
 import (
-	"strconv"
+	"net"
 
 	"github.com/holgermetschulat/radius"
 )
@@ -13,103 +13,40 @@ const (
 	MIP6HomeLinkPrefix_Type radius.Type = 125
 )
 
-type MIP6FeatureVector uint64
-
-var MIP6FeatureVector_Strings = map[MIP6FeatureVector]string{}
-
-func (a MIP6FeatureVector) String() string {
-	if str, ok := MIP6FeatureVector_Strings[a]; ok {
-		return str
-	}
-	return "MIP6FeatureVector(" + strconv.FormatUint(uint64(a), 10) + ")"
-}
-
-func MIP6FeatureVector_Add(p *radius.Packet, value MIP6FeatureVector) (err error) {
-	a := radius.NewInteger64(uint64(value))
-	p.Add(MIP6FeatureVector_Type, a)
-	return
-}
-
-func MIP6FeatureVector_Get(p *radius.Packet) (value MIP6FeatureVector) {
-	value, _ = MIP6FeatureVector_Lookup(p)
-	return
-}
-
-func MIP6FeatureVector_Gets(p *radius.Packet) (values []MIP6FeatureVector, err error) {
-	var i uint64
-	for _, avp := range p.Attributes {
-		if avp.Type != MIP6FeatureVector_Type {
-			continue
-		}
-		attr := avp.Attribute
-		i, err = radius.Integer64(attr)
-		if err != nil {
-			return
-		}
-		values = append(values, MIP6FeatureVector(i))
-	}
-	return
-}
-
-func MIP6FeatureVector_Lookup(p *radius.Packet) (value MIP6FeatureVector, err error) {
-	a, ok := p.Lookup(MIP6FeatureVector_Type)
-	if !ok {
-		err = radius.ErrNoAttribute
-		return
-	}
-	var i uint64
-	i, err = radius.Integer64(a)
-	if err != nil {
-		return
-	}
-	value = MIP6FeatureVector(i)
-	return
-}
-
-func MIP6FeatureVector_Set(p *radius.Packet, value MIP6FeatureVector) (err error) {
-	a := radius.NewInteger64(uint64(value))
-	p.Set(MIP6FeatureVector_Type, a)
-	return
-}
-
-func MIP6FeatureVector_Del(p *radius.Packet) {
-	p.Attributes.Del(MIP6FeatureVector_Type)
-}
-
-func MIP6HomeLinkPrefix_Add(p *radius.Packet, value []byte) (err error) {
+func MIP6FeatureVector_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
 	if err != nil {
 		return
 	}
-	p.Add(MIP6HomeLinkPrefix_Type, a)
+	p.Add(MIP6FeatureVector_Type, a)
 	return
 }
 
-func MIP6HomeLinkPrefix_AddString(p *radius.Packet, value string) (err error) {
+func MIP6FeatureVector_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewString(value)
 	if err != nil {
 		return
 	}
-	p.Add(MIP6HomeLinkPrefix_Type, a)
+	p.Add(MIP6FeatureVector_Type, a)
 	return
 }
 
-func MIP6HomeLinkPrefix_Get(p *radius.Packet) (value []byte) {
-	value, _ = MIP6HomeLinkPrefix_Lookup(p)
+func MIP6FeatureVector_Get(p *radius.Packet) (value []byte) {
+	value, _ = MIP6FeatureVector_Lookup(p)
 	return
 }
 
-func MIP6HomeLinkPrefix_GetString(p *radius.Packet) (value string) {
-	value, _ = MIP6HomeLinkPrefix_LookupString(p)
+func MIP6FeatureVector_GetString(p *radius.Packet) (value string) {
+	value, _ = MIP6FeatureVector_LookupString(p)
 	return
 }
 
-func MIP6HomeLinkPrefix_Gets(p *radius.Packet) (values [][]byte, err error) {
+func MIP6FeatureVector_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, avp := range p.Attributes {
-		if avp.Type != MIP6HomeLinkPrefix_Type {
+		if avp.Type != MIP6FeatureVector_Type {
 			continue
 		}
 		attr := avp.Attribute
@@ -122,10 +59,10 @@ func MIP6HomeLinkPrefix_Gets(p *radius.Packet) (values [][]byte, err error) {
 	return
 }
 
-func MIP6HomeLinkPrefix_GetStrings(p *radius.Packet) (values []string, err error) {
+func MIP6FeatureVector_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, avp := range p.Attributes {
-		if avp.Type != MIP6HomeLinkPrefix_Type {
+		if avp.Type != MIP6FeatureVector_Type {
 			continue
 		}
 		attr := avp.Attribute
@@ -138,8 +75,8 @@ func MIP6HomeLinkPrefix_GetStrings(p *radius.Packet) (values []string, err error
 	return
 }
 
-func MIP6HomeLinkPrefix_Lookup(p *radius.Packet) (value []byte, err error) {
-	a, ok := p.Lookup(MIP6HomeLinkPrefix_Type)
+func MIP6FeatureVector_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := p.Lookup(MIP6FeatureVector_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
@@ -148,8 +85,8 @@ func MIP6HomeLinkPrefix_Lookup(p *radius.Packet) (value []byte, err error) {
 	return
 }
 
-func MIP6HomeLinkPrefix_LookupString(p *radius.Packet) (value string, err error) {
-	a, ok := p.Lookup(MIP6HomeLinkPrefix_Type)
+func MIP6FeatureVector_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := p.Lookup(MIP6FeatureVector_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
@@ -158,19 +95,74 @@ func MIP6HomeLinkPrefix_LookupString(p *radius.Packet) (value string, err error)
 	return
 }
 
-func MIP6HomeLinkPrefix_Set(p *radius.Packet, value []byte) (err error) {
+func MIP6FeatureVector_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
 	if err != nil {
 		return
 	}
-	p.Set(MIP6HomeLinkPrefix_Type, a)
+	p.Set(MIP6FeatureVector_Type, a)
 	return
 }
 
-func MIP6HomeLinkPrefix_SetString(p *radius.Packet, value string) (err error) {
+func MIP6FeatureVector_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	p.Set(MIP6FeatureVector_Type, a)
+	return
+}
+
+func MIP6FeatureVector_Del(p *radius.Packet) {
+	p.Attributes.Del(MIP6FeatureVector_Type)
+}
+
+func MIP6HomeLinkPrefix_Add(p *radius.Packet, value *net.IPNet) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewIPv6Prefix(value)
+	if err != nil {
+		return
+	}
+	p.Add(MIP6HomeLinkPrefix_Type, a)
+	return
+}
+
+func MIP6HomeLinkPrefix_Get(p *radius.Packet) (value *net.IPNet) {
+	value, _ = MIP6HomeLinkPrefix_Lookup(p)
+	return
+}
+
+func MIP6HomeLinkPrefix_Gets(p *radius.Packet) (values []*net.IPNet, err error) {
+	var i *net.IPNet
+	for _, avp := range p.Attributes {
+		if avp.Type != MIP6HomeLinkPrefix_Type {
+			continue
+		}
+		attr := avp.Attribute
+		i, err = radius.IPv6Prefix(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func MIP6HomeLinkPrefix_Lookup(p *radius.Packet) (value *net.IPNet, err error) {
+	a, ok := p.Lookup(MIP6HomeLinkPrefix_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value, err = radius.IPv6Prefix(a)
+	return
+}
+
+func MIP6HomeLinkPrefix_Set(p *radius.Packet, value *net.IPNet) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewIPv6Prefix(value)
 	if err != nil {
 		return
 	}
