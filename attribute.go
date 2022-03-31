@@ -197,6 +197,14 @@ func NewUserPassword(plaintext, secret, requestAuthenticator []byte) (Attribute,
 		chunks = 1
 	}
 
+	pt2 := plaintext
+	// fill plaintext pt2 with 0s if needed
+	remainder := len(pt2) % 16
+	if remainder != 0 || len(pt2) == 0 {
+		fill := make([]byte, (16 - remainder))
+		pt2 = append(pt2, fill...)
+	}
+
 	enc := make([]byte, 0, chunks*16)
 
 	hash := md5.New()
@@ -204,17 +212,17 @@ func NewUserPassword(plaintext, secret, requestAuthenticator []byte) (Attribute,
 	hash.Write(requestAuthenticator)
 	enc = hash.Sum(enc)
 
-	for i, b := range plaintext[:16] {
+	for i, b := range pt2[:16] {
 		enc[i] ^= b
 	}
 
-	for i := 16; i < len(plaintext); i += 16 {
+	for i := 16; i < len(pt2); i += 16 {
 		hash.Reset()
 		hash.Write(secret)
 		hash.Write(enc[i-16 : i])
 		enc = hash.Sum(enc)
 
-		for j, b := range plaintext[i : i+16] {
+		for j, b := range pt2[i : i+16] {
 			enc[i+j] ^= b
 		}
 	}
