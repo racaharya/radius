@@ -196,11 +196,38 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 				RemoteAddr: remoteAddr,
 				Packet:     packet,
 				ctx:        s.ctx,
+				Conn:       conn,
 			}
 
 			s.Handler.ServeRADIUS(&response, &request)
 		}(append([]byte(nil), buff[:n]...), remoteAddr)
 	}
+}
+
+// Listen listens on the address given in s.
+func (s *PacketServer) Listen() (net.PacketConn, error) {
+	if s.Handler == nil {
+		return nil, errors.New("radius: nil Handler")
+	}
+	if s.SecretSource == nil {
+		return nil, errors.New("radius: nil SecretSource")
+	}
+
+	addrStr := ":1812"
+	if s.Addr != "" {
+		addrStr = s.Addr
+	}
+
+	network := "udp"
+	if s.Network != "" {
+		network = s.Network
+	}
+
+	pc, err := net.ListenPacket(network, addrStr)
+	if err != nil {
+		return nil, err
+	}
+	return pc, nil
 }
 
 // ListenAndServe starts a RADIUS server on the address given in s.
