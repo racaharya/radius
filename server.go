@@ -37,6 +37,8 @@ type Request struct {
 	*Packet
 
 	ctx context.Context
+	
+	Conn net.PacketConn
 }
 
 // Context returns the context of the request. If a context has not been set
