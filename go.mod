@@ -1,4 +1,4 @@
-module github.com/npuri/radius
+module github.com/holgermetschulat/radius
 
 go 1.12
 
