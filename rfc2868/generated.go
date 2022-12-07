@@ -569,8 +569,8 @@ func TunnelPassword_Get(p *radius.Packet) (tag byte, value []byte) {
 	return
 }
 
-func TunnelPassword_GetString(p *radius.Packet) (tag byte, value string) {
-	tag, value, _ = TunnelPassword_LookupString(p)
+func TunnelPassword_GetString(p *radius.Packet) (tag byte, value string, err error) {
+	tag, value, err = TunnelPassword_LookupString(p)
 	return
 }
 
