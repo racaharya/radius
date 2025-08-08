@@ -3,6 +3,7 @@ package radius
 import (
 	"context"
 	"errors"
+	"expvar"
 	"log"
 	"net"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"syscall"
+	"time"
 
 	"golang.org/x/sys/unix"
 )
@@ -464,7 +466,7 @@ func (s *PacketServer) Listen() (net.PacketConn, error) {
 	return pc, nil
 }
 
-// ListenAndServe starts a RADIUS server on the address given in s.
+/* // ListenAndServe starts a RADIUS server on the address given in s.
 func (s *PacketServer) ListenAndServe() error {
 	if s.Handler == nil {
 		return errors.New("radius: nil Handler")
@@ -489,6 +491,115 @@ func (s *PacketServer) ListenAndServe() error {
 	}
 	defer pc.Close()
 	return s.Serve(pc)
+} */
+
+var (
+	expPkts     = expvar.NewInt("radius_udp_read_packets_total")
+	expBytes    = expvar.NewInt("radius_udp_read_bytes_total")
+	expPPS      = expvar.NewFloat("radius_udp_read_pps")  // updated every second
+	expBps      = expvar.NewFloat("radius_udp_read_Bps")  // bytes/sec
+	expLastErrs = expvar.NewInt("radius_udp_read_errors") // optional
+)
+
+type meteredPacketConn struct {
+	net.PacketConn
+	pkts  uint64
+	bytes uint64
+	errs  uint64
+}
+
+func (m *meteredPacketConn) ReadFrom(b []byte) (int, net.Addr, error) {
+	n, addr, err := m.PacketConn.ReadFrom(b)
+	if err != nil {
+		atomic.AddUint64(&m.errs, 1)
+		return n, addr, err
+	}
+	if n > 0 {
+		atomic.AddUint64(&m.pkts, 1)
+		atomic.AddUint64(&m.bytes, uint64(n))
+	}
+	return n, addr, nil
+}
+
+func (m *meteredPacketConn) startStatsLoop() func() {
+	t := time.NewTicker(1 * time.Second)
+	done := make(chan struct{})
+
+	var prevPkts, prevBytes uint64
+	go func() {
+		for {
+			select {
+			case <-t.C:
+				// snapshot
+				p := atomic.LoadUint64(&m.pkts)
+				b := atomic.LoadUint64(&m.bytes)
+				e := atomic.LoadUint64(&m.errs)
+
+				// deltas per 1s
+				dPkts := p - prevPkts
+				dBytes := b - prevBytes
+				prevPkts, prevBytes = p, b
+
+				// export
+				expPkts.Set(int64(p))
+				expBytes.Set(int64(b))
+				expLastErrs.Set(int64(e))
+				expPPS.Set(float64(dPkts))
+				expBps.Set(float64(dBytes))
+
+				// optional log if you want a rolling line in logs
+				log.Printf("radius udp: %d pps, %d B/s (total pkts=%d, bytes=%d, errs=%d)", dPkts, dBytes, p, b, e)
+			case <-done:
+				t.Stop()
+				return
+			}
+		}
+	}()
+	// return a stop func
+	return func() { close(done) }
+}
+
+// ListenAndServe binds UDP:1812 (or s.Addr), wraps the socket with a meter,
+// and hands it to Serve. Exposes expvar counters/pps.
+func (s *PacketServer) ListenAndServe() error {
+	if s == nil {
+		return errors.New("radius: nil PacketServer")
+	}
+	if s.Handler == nil {
+		return errors.New("radius: nil Handler")
+	}
+	if s.SecretSource == nil {
+		return errors.New("radius: nil SecretSource")
+	}
+
+	addrStr := s.Addr
+	if addrStr == "" {
+		addrStr = ":1812"
+	}
+	network := s.Network
+	if network == "" {
+		network = "udp"
+	}
+
+	pc, err := net.ListenPacket(network, addrStr)
+	if err != nil {
+		return err
+	}
+	defer pc.Close()
+
+	// Socket buffers—safe headroom for tiny GC/scheduler stalls.
+	if uc, ok := pc.(*net.UDPConn); ok {
+		_ = uc.SetReadBuffer(4 * 1024 * 1024)
+		_ = uc.SetWriteBuffer(1 * 1024 * 1024)
+	}
+
+	// Wrap with metering
+	mpc := &meteredPacketConn{PacketConn: pc}
+	stopStats := mpc.startStatsLoop()
+	defer stopStats()
+
+	log.Printf("radius: listening on %s/%s", addrStr, network)
+	return s.Serve(mpc)
 }
 
 // Shutdown gracefully stops the server. It first closes all listeners and then
